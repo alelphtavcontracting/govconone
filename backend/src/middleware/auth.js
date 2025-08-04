@@ -1,34 +1,47 @@
-const jwt = require('jsonwebtoken');
+const authService = require('../services/authService');
 
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token || token === 'demo-jwt-token-for-development' || token === 'null' || token === 'undefined') {
+const authenticateToken = async (req, res, next) => {
+  if (process.env.NODE_ENV === 'development') {
     req.user = {
-      id: '1',
+      id: '00000000-0000-0000-0000-000000000002',
       email: 'demo@govconone.com',
       name: 'Demo User',
       tier: 'free',
-      tenant_id: 'demo-tenant'
+      tenant_id: '00000000-0000-0000-0000-000000000001',
+      role: 'admin'
     };
     return next();
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      req.user = {
-        id: '1',
-        email: 'demo@govconone.com',
-        name: 'Demo User',
-        tier: 'free',
-        tenant_id: 'demo-tenant'
-      };
-      return next();
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token required' });
+  }
+
+  try {
+    const decoded = authService.verifyJWT(token);
+    const user = await authService.getUserById(decoded.id);
+    
+    if (!user || !user.is_active) {
+      return res.status(401).json({ error: 'Invalid or inactive user' });
     }
-    req.user = user;
+
+    req.user = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      tier: user.subscription_tier,
+      tenant_id: user.tenant_id,
+      role: user.role
+    };
+    
     next();
-  });
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return res.status(401).json({ error: 'Invalid token' });
+  }
 };
 
 const requireTier = (requiredTier) => {
