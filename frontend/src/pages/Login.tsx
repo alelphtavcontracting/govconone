@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { GoogleLoginButton } from '../components/GoogleLoginButton';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('demo@govconone.com');
@@ -8,6 +9,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { user, login } = useAuth();
+  const navigate = useNavigate();
 
   if (user) {
     return <Navigate to="/" replace />;
@@ -19,13 +21,21 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      localStorage.setItem('token', 'demo-token');
-      window.location.reload();
-    } catch (err) {
-      setError('Login failed. Please try again.');
+      await login(email, password);
+      navigate('/');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = () => {
+    navigate('/');
+  };
+
+  const handleGoogleError = () => {
+    setError('Google login failed. Please try again.');
   };
 
   return (
@@ -41,7 +51,26 @@ const Login: React.FC = () => {
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        {/* Google Sign In */}
+        <div className="mt-8">
+          <GoogleLoginButton 
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+          />
+        </div>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-secondary-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-secondary-50 text-secondary-500">Or continue with email</span>
+            </div>
+          </div>
+        </div>
+
+        <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
               {error}
@@ -94,7 +123,7 @@ const Login: React.FC = () => {
 
           <div className="text-center">
             <p className="text-sm text-secondary-600">
-              Demo credentials are pre-filled. Click "Sign in" to continue.
+              Demo credentials are pre-filled for development testing.
             </p>
           </div>
         </form>

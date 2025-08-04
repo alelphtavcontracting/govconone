@@ -40,26 +40,6 @@ const Capabilities: React.FC = () => {
     }));
   };
 
-  const handleArrayInputChange = (field: 'certifications' | 'coreCompetencies', index: number, value: string) => {
-    setCompanyProfile(prev => ({
-      ...prev,
-      [field]: prev[field].map((item, i) => i === index ? value : item)
-    }));
-  };
-
-  const addArrayItem = (field: 'certifications' | 'coreCompetencies') => {
-    setCompanyProfile(prev => ({
-      ...prev,
-      [field]: [...prev[field], '']
-    }));
-  };
-
-  const removeArrayItem = (field: 'certifications' | 'coreCompetencies', index: number) => {
-    setCompanyProfile(prev => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
-    }));
-  };
 
   const handleNaicsChange = (index: number, value: string) => {
     setNaicsCodes(prev => prev.map((code, i) => i === index ? value : code));

@@ -1,12 +1,9 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 class AuthService {
-  private token: string | null = null;
-
   setToken(token: string | null) {
-    this.token = token;
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
@@ -31,10 +28,20 @@ class AuthService {
     return response.data;
   }
 
-  async googleLogin(token: string) {
+  async googleLogin(idToken: string) {
     const response = await axios.post(`${API_URL}/auth/google`, {
-      token
+      token: idToken
     });
+    return response.data;
+  }
+
+  async verifyToken() {
+    const response = await axios.get(`${API_URL}/auth/verify`);
+    return response.data;
+  }
+
+  async getProfile() {
+    const response = await axios.get(`${API_URL}/auth/profile`);
     return response.data;
   }
 }
