@@ -35,17 +35,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      authService.setToken(token);
-      setUser({
-        id: '1',
-        email: 'demo@govconone.com',
-        name: 'Demo User',
-        tier: 'free',
-        tenant_id: 'demo-tenant'
-      });
+    let token = localStorage.getItem('token');
+    if (!token) {
+      token = 'demo-jwt-token-for-development';
+      localStorage.setItem('token', token);
     }
+    
+    authService.setToken(token);
+    setUser({
+      id: '1',
+      email: 'demo@govconone.com',
+      name: 'Demo User',
+      tier: 'free',
+      tenant_id: 'demo-tenant'
+    });
     setLoading(false);
   }, []);
 
