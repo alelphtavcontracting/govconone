@@ -7,11 +7,14 @@ interface User {
   name: string;
   tier: 'free' | 'pro' | 'elite';
   tenant_id: string;
+  avatar_url?: string;
+  role: string;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
+  googleLogin: (token: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
 }
@@ -35,27 +38,62 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let token = localStorage.getItem('token');
-    if (!token) {
-      token = 'demo-jwt-token-for-development';
-      localStorage.setItem('token', token);
-    }
-    
-    authService.setToken(token);
-    setUser({
-      id: '1',
-      email: 'demo@govconone.com',
-      name: 'Demo User',
-      tier: 'free',
-      tenant_id: 'demo-tenant'
-    });
-    setLoading(false);
+    const initAuth = async () => {
+      const token = localStorage.getItem('token');
+      
+      if (token) {
+        authService.setToken(token);
+        try {
+          const response = await authService.verifyToken();
+          if (response.valid) {
+            setUser(response.user);
+          } else {
+            localStorage.removeItem('token');
+            authService.setToken(null);
+          }
+        } catch (error) {
+          console.error('Token verification failed:', error);
+          localStorage.removeItem('token');
+          authService.setToken(null);
+        }
+      } else {
+        if (import.meta.env.MODE === 'development') {
+          const demoToken = 'demo-jwt-token-for-development';
+          localStorage.setItem('token', demoToken);
+          authService.setToken(demoToken);
+          setUser({
+            id: '00000000-0000-0000-0000-000000000002',
+            email: 'demo@govconone.com',
+            name: 'Demo User',
+            tier: 'free',
+            tenant_id: '00000000-0000-0000-0000-000000000001',
+            role: 'admin'
+          });
+        }
+      }
+      
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
       const response = await authService.login(email, password);
       localStorage.setItem('token', response.token);
+      authService.setToken(response.token);
+      setUser(response.user);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const googleLogin = async (token: string) => {
+    try {
+      const response = await authService.googleLogin(token);
+      localStorage.setItem('token', response.token);
+      authService.setToken(response.token);
       setUser(response.user);
     } catch (error) {
       throw error;
@@ -71,6 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value = {
     user,
     login,
+    googleLogin,
     logout,
     loading
   };
