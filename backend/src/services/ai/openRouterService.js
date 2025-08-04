@@ -2,9 +2,14 @@ const OpenAI = require('openai');
 
 class OpenRouterService {
   constructor() {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
+      throw new Error('OPENROUTER_API_KEY environment variable is required');
+    }
+    
     this.client = new OpenAI({
       baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: process.env.OPENROUTER_API_KEY,
+      apiKey: apiKey,
       defaultHeaders: {
         'HTTP-Referer': process.env.FRONTEND_URL || 'http://localhost:3000',
         'X-Title': 'GovConOne AI Assistant',
@@ -13,20 +18,20 @@ class OpenRouterService {
     
     this.models = {
       free: {
-        chat: 'zhipuai/glm-4-9b-chat:free',
-        code: 'qwen/qwen-2.5-coder-32b-instruct:free'
+        chat: 'meta-llama/llama-3.2-1b-instruct',
+        code: 'meta-llama/llama-3.2-1b-instruct'
       },
       paid: {
-        chat: 'zhipuai/glm-4-plus',
-        code: 'qwen/qwen-2.5-coder-32b-instruct',
-        analysis: 'anthropic/claude-3.5-sonnet'
+        chat: 'meta-llama/llama-3.2-1b-instruct',
+        code: 'meta-llama/llama-3.2-1b-instruct',
+        analysis: 'meta-llama/llama-3.2-1b-instruct'
       }
     };
   }
 
   async generateText(prompt, model = null, systemPrompt = null) {
     try {
-      const selectedModel = model || this.models.free.chat;
+      const selectedModel = model || 'meta-llama/llama-3.2-1b-instruct';
       
       const messages = [];
       if (systemPrompt) {

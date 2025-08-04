@@ -16,6 +16,8 @@ interface AIContextType {
   clearMessages: () => void;
   currentModule: string;
   setCurrentModule: (module: string) => void;
+  generateCapabilityStatement: (companyProfile: any, naicsCodes: string[], templateType: string) => Promise<any>;
+  optimizeContent: (content: string, optimizationType: string) => Promise<string>;
 }
 
 const AIContext = createContext<AIContextType | undefined>(undefined);
@@ -81,13 +83,73 @@ export const AIProvider: React.FC<AIProviderProps> = ({ children }) => {
     setMessages([]);
   };
 
+  const generateCapabilityStatement = async (companyProfile: any, naicsCodes: string[], templateType: string) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/capabilities/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          companyProfile,
+          naicsCodes,
+          templateType
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate capability statement');
+      }
+
+      const data = await response.json();
+      return {
+        content: data.capabilityStatement,
+        generatedAt: data.generatedAt
+      };
+    } catch (error) {
+      console.error('Error generating capability statement:', error);
+      throw error;
+    }
+  };
+
+  const optimizeContent = async (content: string, optimizationType: string) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/capabilities/optimize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          content,
+          optimizationType
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to optimize content');
+      }
+
+      const data = await response.json();
+      return data.optimizedContent;
+    } catch (error) {
+      console.error('Error optimizing content:', error);
+      throw error;
+    }
+  };
+
   const value = {
     messages,
     isLoading,
     sendMessage,
     clearMessages,
     currentModule,
-    setCurrentModule
+    setCurrentModule,
+    generateCapabilityStatement,
+    optimizeContent
   };
 
   return (

@@ -11,12 +11,17 @@ const contractRoutes = require('./routes/contracts');
 const subcontractorRoutes = require('./routes/subcontractors');
 const documentRoutes = require('./routes/documents');
 const aiRoutes = require('./routes/ai');
+const capabilitiesRoutes = require('./routes/capabilities');
 
 const app = express();
 
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',
+    'https://saas-application-app-tunnel-xtkbq7ws.devinapps.com',
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
   credentials: true
 }));
 
@@ -36,6 +41,7 @@ app.use('/api/contracts', contractRoutes);
 app.use('/api/subcontractors', subcontractorRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/capabilities', capabilitiesRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
