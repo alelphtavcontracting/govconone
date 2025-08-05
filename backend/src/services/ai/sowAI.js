@@ -4,9 +4,14 @@ class SOWProcessor {
   async extractSOWSections(documentContent, tier = 'free') {
     const model = openRouterService.getModelForTier(tier, 'code');
     
+    const maxContentLength = 100000;
+    const truncatedContent = documentContent.length > maxContentLength 
+      ? documentContent.substring(0, maxContentLength) + '\n\n[Content truncated due to length...]'
+      : documentContent;
+    
     const prompt = `Extract key sections from this Statement of Work (SOW) document and return as structured JSON:
 
-${documentContent}
+${truncatedContent}
 
 Extract and structure the following sections:
 - scope: Project scope and objectives
@@ -126,10 +131,15 @@ Format as a structured compliance report.`;
   async transformB2GtoB2B(sowContent, companySettings, tier = 'pro') {
     const model = openRouterService.getModelForTier(tier);
     
+    const maxContentLength = 80000;
+    const truncatedContent = sowContent.length > maxContentLength 
+      ? sowContent.substring(0, maxContentLength) + '\n\n[Content truncated due to length...]'
+      : sowContent;
+    
     const prompt = `Transform this government Statement of Work (B2G) into a Business-to-Business (B2B) document for subcontractor outreach:
 
 Original Government SOW:
-${sowContent}
+${truncatedContent}
 
 Prime Contractor Information:
 ${JSON.stringify(companySettings, null, 2)}
