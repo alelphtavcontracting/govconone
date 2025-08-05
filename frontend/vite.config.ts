@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
-    allowedHosts: ['saas-application-app-tunnel-xtkbq7ws.devinapps.com'],
+    allowedHosts: ['saas-application-app-tunnel-q6xrghyz.devinapps.com'],
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
