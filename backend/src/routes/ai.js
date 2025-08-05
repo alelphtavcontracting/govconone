@@ -177,4 +177,18 @@ router.post('/proposals/past-performance', requireTier('pro'), async (req, res) 
   }
 });
 
+router.post('/sow/transform-b2b', requireTier('pro'), async (req, res) => {
+  try {
+    const { sowContent, companySettings } = req.body;
+    const tier = req.user.tier || 'pro';
+    
+    const transformed = await sowAI.transformB2GtoB2B(sowContent, companySettings, tier);
+    
+    res.json({ transformed_sow: transformed });
+  } catch (error) {
+    console.error('B2B Transformation Error:', error);
+    res.status(500).json({ error: 'Failed to transform SOW to B2B format' });
+  }
+});
+
 module.exports = router;

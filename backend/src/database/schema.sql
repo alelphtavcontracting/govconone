@@ -26,6 +26,24 @@ CREATE TABLE users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE company_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    company_name VARCHAR(255) NOT NULL,
+    company_logo_url TEXT,
+    capability_statement TEXT,
+    years_in_business INTEGER,
+    naics_codes TEXT[],
+    address TEXT,
+    phone VARCHAR(50),
+    email VARCHAR(255),
+    website VARCHAR(255),
+    certifications TEXT[],
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tenant_id)
+);
+
 CREATE TABLE ai_usage_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
@@ -130,6 +148,7 @@ CREATE TABLE capability_statements (
 CREATE INDEX idx_users_tenant_id ON users(tenant_id);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_google_id ON users(google_id);
+CREATE INDEX idx_company_settings_tenant_id ON company_settings(tenant_id);
 CREATE INDEX idx_ai_usage_logs_tenant_id ON ai_usage_logs(tenant_id);
 CREATE INDEX idx_ai_usage_logs_created_at ON ai_usage_logs(created_at);
 CREATE INDEX idx_documents_tenant_id ON documents(tenant_id);
@@ -141,6 +160,7 @@ CREATE INDEX idx_capability_statements_tenant_id ON capability_statements(tenant
 
 ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE company_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ai_usage_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE opportunities ENABLE ROW LEVEL SECURITY;

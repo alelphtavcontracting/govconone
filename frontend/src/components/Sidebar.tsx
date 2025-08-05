@@ -14,7 +14,8 @@ const Sidebar: React.FC = () => {
     { id: 'capabilities', name: 'Capabilities', icon: '⭐' },
     { id: 'agreements', name: 'Agreements', icon: '📄' },
     { id: 'pricing', name: 'Pricing Intel', icon: '💰' },
-    { id: 'proposals', name: 'Proposals', icon: '📊' }
+    { id: 'proposals', name: 'Proposals', icon: '📊' },
+    { id: 'settings', name: 'Settings', icon: '⚙️' }
   ];
 
   return (

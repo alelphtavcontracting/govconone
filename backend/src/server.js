@@ -42,6 +42,7 @@ app.use('/api/subcontractors', subcontractorRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/capabilities', capabilitiesRoutes);
+app.use('/api/company-settings', require('./routes/companySettings'));
 
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });

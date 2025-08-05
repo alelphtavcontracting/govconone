@@ -122,6 +122,35 @@ Format as a structured compliance report.`;
     const response = await openRouterService.generateText(prompt, model);
     return response.content;
   }
+
+  async transformB2GtoB2B(sowContent, companySettings, tier = 'pro') {
+    const model = openRouterService.getModelForTier(tier);
+    
+    const prompt = `Transform this government Statement of Work (B2G) into a Business-to-Business (B2B) document for subcontractor outreach:
+
+Original Government SOW:
+${sowContent}
+
+Prime Contractor Information:
+${JSON.stringify(companySettings, null, 2)}
+
+Transformation Requirements:
+- Replace government agency references with prime contractor company name: "${companySettings.company_name}"
+- Change perspective from government-to-contractor to contractor-to-subcontractor
+- Maintain all technical requirements and deliverables exactly
+- Update contact information to prime contractor details
+- Preserve all compliance and quality requirements
+- Adjust timeline references to reflect subcontractor role
+- Include prime contractor branding elements
+- Maintain professional government contracting language
+- Position the prime contractor as the client issuing work to subcontractor
+- Replace any government contact information with prime contractor details
+
+Return the transformed B2B SOW document ready for subcontractor distribution.`;
+
+    const response = await openRouterService.generateText(prompt, model);
+    return response.content;
+  }
 }
 
 module.exports = new SOWProcessor();
