@@ -26,11 +26,15 @@ const SOWRepurposer: React.FC = () => {
       const formData = new FormData();
       formData.append('document', file);
 
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch('/api/documents/upload-sow', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
+        headers,
         body: formData
       });
 
@@ -60,12 +64,17 @@ const SOWRepurposer: React.FC = () => {
     setTransforming(true);
     setError('');
     try {
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch('/api/documents/transform-sow', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
+        headers,
         body: JSON.stringify({
           sowContent: document.raw_content,
           documentId: document.id
