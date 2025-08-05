@@ -74,7 +74,7 @@ class AuthService {
       
       const tenantResult = await client.query(
         'INSERT INTO tenants (name, subscription_tier) VALUES ($1, $2) RETURNING *',
-        [googleProfile.name + "'s Organization", 'free']
+        [googleProfile.name + '\'s Organization', 'free']
       );
       
       const tenant = tenantResult.rows[0];
@@ -201,7 +201,7 @@ class AuthService {
       
       const tenantResult = await client.query(
         'INSERT INTO tenants (name, subscription_tier) VALUES ($1, $2) RETURNING *',
-        [userData.name + "'s Organization", 'free']
+        [userData.name + '\'s Organization', 'free']
       );
       
       const tenant = tenantResult.rows[0];
