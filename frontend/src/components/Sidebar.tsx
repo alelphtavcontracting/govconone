@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAI } from '../contexts/AIContext';
 
 const Sidebar: React.FC = () => {
+  const navigate = useNavigate();
   const { setCurrentModule } = useAI();
 
   const modules = [
@@ -29,7 +31,10 @@ const Sidebar: React.FC = () => {
         {modules.map((module) => (
           <button
             key={module.id}
-            onClick={() => setCurrentModule(module.id)}
+            onClick={() => {
+              setCurrentModule(module.id);
+              navigate(module.id === 'dashboard' ? '/' : `/${module.id}`);
+            }}
             className="w-full flex items-center px-6 py-3 text-left text-secondary-700 hover:bg-secondary-50 hover:text-primary-600 transition-colors duration-200"
           >
             <span className="mr-3">{module.icon}</span>
