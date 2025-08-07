@@ -60,10 +60,16 @@ router.post('/upload-sow', requireTier('pro'), upload.single('document'), aiUsag
     const filePath = req.file.path;
     let fileContent;
     
-    try {
-      fileContent = fs.readFileSync(filePath, 'utf8');
-    } catch (readError) {
-      return res.status(400).json({ error: 'Unable to read file content. Please ensure the file is a valid text document.' });
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    
+    if (ext === '.txt') {
+      try {
+        fileContent = fs.readFileSync(filePath, 'utf8');
+      } catch (readError) {
+        return res.status(400).json({ error: 'Unable to read text file content.' });
+      }
+    } else {
+      fileContent = `[${ext.toUpperCase()} file - content will be extracted during processing]`;
     }
     
     const tier = req.user.tier || 'pro';
@@ -81,7 +87,7 @@ router.post('/upload-sow', requireTier('pro'), upload.single('document'), aiUsag
       req.file.path,
       req.file.size,
       req.file.mimetype,
-      { sections, original_content: fileContent }
+      { sections, file_type: ext, processed: true }
     ]);
 
     res.json({

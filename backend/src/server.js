@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://saas-application-app-tunnel-xtkbq7ws.devinapps.com',
+    'https://saas-application-app-tunnel-q6xrghyz.devinapps.com',
     process.env.FRONTEND_URL
   ].filter(Boolean),
   credentials: true

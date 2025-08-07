@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             id: '00000000-0000-0000-0000-000000000002',
             email: 'demo@govconone.com',
             name: 'Demo User',
-            tier: 'free',
+            tier: 'pro',
             tenant_id: '00000000-0000-0000-0000-000000000001',
             role: 'admin'
           });
