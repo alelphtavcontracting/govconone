@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+// Remove FcGoogle import since we're not using it and it's causing errors
+// import { FcGoogle } from 'react-icons/fc';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('demo@govconone.com');
@@ -19,12 +21,26 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      localStorage.setItem('token', 'demo-token');
-      window.location.reload();
+      // For demo purposes, we'll simulate a successful login
+      await _login(email, password);
     } catch (err) {
+      console.error('Login error:', err);
       setError('Login failed. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      // This will redirect to the backend's Google OAuth endpoint
+      // For now, we'll just show a message since Google OAuth needs proper configuration
+      setError('Google login is not configured yet. Please use the demo login.');
+      // Uncomment this when Google OAuth is properly configured
+      // window.location.href = `${import.meta.env.VITE_API_URL || '/api'}/auth/google`;
+    } catch (err) {
+      console.error('Google login error:', err);
+      setError('Failed to initiate Google login. Please try again.');
     }
   };
 
@@ -86,15 +102,33 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed mb-4"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Signing in...' : 'Sign in with Email'}
+            </button>
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            >
+              <span className="mr-2">G</span>
+              Sign in with Google (Coming Soon)
             </button>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-secondary-600">
-              Demo credentials are pre-filled. Click "Sign in" to continue.
+              Demo credentials are pre-filled. Use "Sign in with Email" to continue.
             </p>
           </div>
         </form>
