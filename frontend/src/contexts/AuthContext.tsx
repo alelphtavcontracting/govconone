@@ -35,21 +35,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let token = localStorage.getItem('token');
-    if (!token) {
-      token = 'demo-jwt-token-for-development';
-      localStorage.setItem('token', token);
-    }
+    const token = localStorage.getItem('token');
     
-    authService.setToken(token);
-    setUser({
-      id: '1',
-      email: 'demo@govconone.com',
-      name: 'Demo User',
-      tier: 'free',
-      tenant_id: 'demo-tenant'
-    });
-    setLoading(false);
+    const validateToken = async () => {
+      if (token) {
+        try {
+          authService.setToken(token);
+          // Here you would typically validate the token with the backend
+          // For now, we'll just clear it since we don't have a validation endpoint
+          localStorage.removeItem('token');
+          authService.setToken(null);
+        } catch (error) {
+          console.error('Error validating token:', error);
+          localStorage.removeItem('token');
+          authService.setToken(null);
+        }
+      }
+      setLoading(false);
+    };
+
+    validateToken();
   }, []);
 
   const login = async (email: string, password: string) => {

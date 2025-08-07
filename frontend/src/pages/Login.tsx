@@ -7,7 +7,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('demo123');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { user, login } = useAuth();
+  const { user, login: _login } = useAuth(); // login is currently unused
 
   if (user) {
     return <Navigate to="/" replace />;

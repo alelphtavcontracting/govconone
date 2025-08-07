@@ -2,11 +2,9 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-class AuthService {
-  private token: string | null = null;
-
-  setToken(token: string | null) {
-    this.token = token;
+// Private implementation
+class _AuthService {
+  setToken = (token: string | null) => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
@@ -14,7 +12,7 @@ class AuthService {
     }
   }
 
-  async login(email: string, password: string) {
+  login = async (email: string, password: string) => {
     const response = await axios.post(`${API_URL}/auth/login`, {
       email,
       password
@@ -22,7 +20,7 @@ class AuthService {
     return response.data;
   }
 
-  async register(email: string, password: string, name: string) {
+  register = async (email: string, password: string, name: string) => {
     const response = await axios.post(`${API_URL}/auth/register`, {
       email,
       password,
@@ -31,12 +29,21 @@ class AuthService {
     return response.data;
   }
 
-  async googleLogin(token: string) {
+  googleLogin = async (token: string) => {
     const response = await axios.post(`${API_URL}/auth/google`, {
       token
     });
     return response.data;
   }
+
+  logout = () => {
+    this.setToken(null);
+    localStorage.removeItem('token');
+  }
 }
 
-export const authService = new AuthService();
+// Create and export a single instance
+export const authService = Object.freeze(new _AuthService());
+
+// Also export as default for backward compatibility
+export default authService;
