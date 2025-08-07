@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             id: 'demo-user-123',
             email: 'demo@govconone.com',
             name: 'Demo User',
-            tier: 'free' as const,
+            tier: 'pro' as const,
             tenant_id: 'demo-tenant-123'
           };
           setUser(mockUser);

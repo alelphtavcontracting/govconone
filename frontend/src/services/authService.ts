@@ -51,17 +51,15 @@ class _AuthService {
   }
 }
 
-// Create a single instance
+// Create and export a single instance
 const authService = new _AuthService();
 
 // Set initial token if it exists in localStorage
 const token = localStorage.getItem('token');
 if (token) {
-  // Set the token in the axios headers
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  // Also set it in the instance
-  (authService as any)._token = token;
+  // Use the instance method to ensure proper initialization
+  authService.setToken(token);
 }
 
+// Export the instance as default
 export default authService;
-export { authService };
