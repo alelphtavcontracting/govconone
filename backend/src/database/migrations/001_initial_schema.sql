@@ -128,30 +128,6 @@ CREATE TABLE capability_statements (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
-CREATE POLICY tenant_isolation ON tenants FOR ALL TO authenticated USING (id = current_setting('app.current_tenant_id')::UUID);
-
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-CREATE POLICY user_tenant_isolation ON users FOR ALL TO authenticated USING (tenant_id = current_setting('app.current_tenant_id')::UUID);
-
-ALTER TABLE ai_usage_logs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY ai_usage_tenant_isolation ON ai_usage_logs FOR ALL TO authenticated USING (tenant_id = current_setting('app.current_tenant_id')::UUID);
-
-ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
-CREATE POLICY documents_tenant_isolation ON documents FOR ALL TO authenticated USING (tenant_id = current_setting('app.current_tenant_id')::UUID);
-
-ALTER TABLE opportunities ENABLE ROW LEVEL SECURITY;
-CREATE POLICY opportunities_tenant_isolation ON opportunities FOR ALL TO authenticated USING (tenant_id = current_setting('app.current_tenant_id')::UUID);
-
-ALTER TABLE contracts ENABLE ROW LEVEL SECURITY;
-CREATE POLICY contracts_tenant_isolation ON contracts FOR ALL TO authenticated USING (tenant_id = current_setting('app.current_tenant_id')::UUID);
-
-ALTER TABLE subcontractors ENABLE ROW LEVEL SECURITY;
-CREATE POLICY subcontractors_tenant_isolation ON subcontractors FOR ALL TO authenticated USING (tenant_id = current_setting('app.current_tenant_id')::UUID);
-
-ALTER TABLE capability_statements ENABLE ROW LEVEL SECURITY;
-CREATE POLICY capability_statements_tenant_isolation ON capability_statements FOR ALL TO authenticated USING (tenant_id = current_setting('app.current_tenant_id')::UUID);
-
 CREATE INDEX idx_users_tenant_id ON users(tenant_id);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_google_id ON users(google_id);

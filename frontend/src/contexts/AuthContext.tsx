@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authService } from '../services/authService';
+import authService from '../services/authService';
 
 interface User {
   id: string;
@@ -13,8 +13,12 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+<<<<<<< HEAD
   login: (email: string, password: string) => Promise<void>;
   googleLogin: (token: string) => Promise<void>;
+=======
+  login: (email: string, password: string) => Promise<User>;
+>>>>>>> fix-main
   logout: () => void;
   loading: boolean;
 }
@@ -38,6 +42,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+<<<<<<< HEAD
     const initAuth = async () => {
       const token = localStorage.getItem('token');
       
@@ -76,10 +81,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     initAuth();
+=======
+    const validateToken = async () => {
+      const token = authService.getToken();
+      
+      if (token) {
+        try {
+          // Here you would typically validate the token with the backend
+          // For demo purposes, we'll just set a mock user
+          const mockUser = {
+            id: 'demo-user-123',
+            email: 'demo@govconone.com',
+            name: 'Demo User',
+            tier: 'pro' as const,
+            tenant_id: 'demo-tenant-123'
+          };
+          setUser(mockUser);
+        } catch (error) {
+          console.error('Error validating token:', error);
+          authService.setToken(null);
+        }
+      }
+      setLoading(false);
+    };
+
+    validateToken();
+>>>>>>> fix-main
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, _password: string): Promise<User> => {
     try {
+<<<<<<< HEAD
       const response = await authService.login(email, password);
       localStorage.setItem('token', response.token);
       authService.setToken(response.token);
@@ -95,18 +127,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('token', response.token);
       authService.setToken(response.token);
       setUser(response.user);
+=======
+      // For demo purposes, bypass actual login and use mock data
+      const mockUser = {
+        id: 'demo-user-123',
+        email: email || 'demo@govconone.com',
+        name: 'Demo User',
+        tier: 'free' as const,
+        tenant_id: 'demo-tenant-123'
+      };
+      
+      // Set a mock token
+      const mockToken = 'demo-token-123';
+      authService.setToken(mockToken);
+      setUser(mockUser);
+      
+      return mockUser;
+>>>>>>> fix-main
     } catch (error) {
+      console.error('Login error:', error);
       throw error;
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
     authService.setToken(null);
     setUser(null);
   };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     login,
     googleLogin,
@@ -116,7 +165,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
