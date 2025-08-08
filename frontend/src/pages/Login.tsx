@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { GoogleLoginButton } from '../components/GoogleLoginButton';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('demo@govconone.com');
   const [password, setPassword] = useState('demo123');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { user, login } = useAuth();
+  const { user, login, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   if (user) {
@@ -34,8 +33,17 @@ const Login: React.FC = () => {
     navigate('/');
   };
 
-  const handleGoogleError = () => {
-    setError('Google login failed. Please try again.');
+  const handleGoogleLogin = async (token: string) => {
+    try {
+      setLoading(true);
+      setError('');
+      await googleLogin(token);
+      navigate('/');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Google login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,10 +61,21 @@ const Login: React.FC = () => {
         
         {/* Google Sign In */}
         <div className="mt-8">
-          <GoogleLoginButton 
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-          />
+          <button
+            type="button"
+            onClick={() => {
+              // This is a placeholder for the actual Google OAuth flow
+              // In a real implementation, you would use the Google OAuth client
+              // and call handleGoogleLogin with the ID token
+              const demoToken = 'demo-google-token';
+              handleGoogleLogin(demoToken);
+            }}
+            className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            disabled={loading}
+          >
+            <span className="mr-2">G</span>
+            {loading ? 'Signing in...' : 'Sign in with Google'}
+          </button>
         </div>
 
         <div className="mt-6">
@@ -125,18 +144,9 @@ const Login: React.FC = () => {
                 <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                <span className="px-2 bg-white text-gray-500">Or continue with email</span>
               </div>
             </div>
-
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-            >
-              <span className="mr-2">G</span>
-              Sign in with Google (Coming Soon)
-            </button>
           </div>
 
           <div className="text-center">

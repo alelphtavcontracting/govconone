@@ -40,10 +40,6 @@ const Capabilities: React.FC = () => {
     }));
   };
 
-<<<<<<< HEAD
-=======
-  // These functions are kept for future use
-  /*
   const handleArrayInputChange = (field: 'certifications' | 'coreCompetencies', index: number, value: string) => {
     setCompanyProfile(prev => ({
       ...prev,
@@ -64,8 +60,6 @@ const Capabilities: React.FC = () => {
       [field]: prev[field].filter((_, i) => i !== index)
     }));
   };
-  */
->>>>>>> fix-main
 
   const handleNaicsChange = (index: number, value: string) => {
     setNaicsCodes(prev => prev.map((code, i) => i === index ? value : code));
